@@ -1,6 +1,7 @@
 // Features to add
 // 1) notifications like with the countries project
 // 2) change blogService to use async await
+//
 
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
