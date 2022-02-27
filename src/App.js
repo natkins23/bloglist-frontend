@@ -2,7 +2,6 @@
 // 1) notifications like with the countries project
 // 2) change blogService to use async await
 
-/* global window */
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -13,6 +12,9 @@ function App() {
     const [blogs, setBlogs] = useState([])
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [title, setTitle] = useState('')
+    const [author, setAuthor] = useState('')
+    const [url, setUrl] = useState('')
     const [errorMessage, setErrorMessage] = useState(null)
     const [user, setUser] = useState(null)
 
@@ -52,7 +54,30 @@ function App() {
             }, 5000)
         }
     }
-
+    const addBlog = () => (
+        <>
+            <h2>Add a blog</h2>
+            <form onSubmit={handleLogin}>
+                <div>
+                    title:
+                    <input type="text" value={title} name="Title" onChange={({ target }) => setTitle(target.value)} />
+                </div>
+                <div>
+                    author:
+                    <input
+                        type="text"
+                        value={author}
+                        name="Author"
+                        onChange={({ target }) => setAuthor(target.value)}
+                    />
+                </div>
+                <div>
+                    url:
+                    <input type="text" value={url} name="url" onChange={({ target }) => setUrl(target.value)} />
+                </div>
+            </form>
+        </>
+    )
     const loginForm = () => (
         <>
             <h2>Log in to application</h2>
@@ -91,6 +116,7 @@ function App() {
             {blogs.map(blog => (
                 <Blog key={blog.id} blog={blog} />
             ))}
+            {addBlog()}
         </>
     )
     return (
