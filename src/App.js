@@ -1,8 +1,8 @@
 // Features to add
 // 1) notifications like with the countries project
 // 2) change blogService to use async await
-//
 
+/* global window */
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -20,15 +20,28 @@ function App() {
         blogService.getAll().then(b => setBlogs(b))
     }, [])
 
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem('loggedUser')
+        if (loggedUserJSON) {
+            const loggedUser = JSON.parse(loggedUserJSON)
+            setUser(loggedUser)
+        }
+    }, [])
+    const handleLogout = () => {
+        console.log('logging out of', user.username)
+        setUser(null)
+        window.localStorage.removeItem('loggedUser')
+    }
     const handleLogin = async event => {
         event.preventDefault()
         console.log('logging in with', username, password)
         try {
-            const userToken = await loginService.login({
+            const loggedUser = await loginService.login({
                 username,
                 password,
             })
-            setUser(userToken)
+            setUser(loggedUser)
+            window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
             setUsername('')
             setPassword('')
         } catch (exception) {
@@ -68,7 +81,13 @@ function App() {
     )
     const showBlogs = () => (
         <>
-            <p>{user.name} logged-in</p>
+            <p>
+                Hi {user.name}!
+                <button type="button" onClick={handleLogout}>
+                    logout
+                </button>
+            </p>
+
             {blogs.map(blog => (
                 <Blog key={blog.id} blog={blog} />
             ))}
