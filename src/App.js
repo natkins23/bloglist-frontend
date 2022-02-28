@@ -27,6 +27,7 @@ function App() {
         if (loggedUserJSON) {
             const loggedUser = JSON.parse(loggedUserJSON)
             setUser(loggedUser)
+            blogService.setToken(loggedUser.token)
         }
     }, [])
     const handleLogout = () => {
@@ -43,6 +44,7 @@ function App() {
                 password,
             })
             setUser(loggedUser)
+            blogService.setToken(loggedUser.token)
             window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
             setUsername('')
             setPassword('')
@@ -54,10 +56,24 @@ function App() {
             }, 5000)
         }
     }
-    const addBlog = () => (
+    const addBlog = async event => {
+        event.preventDefault()
+        console.log(user)
+        const newBlogObject = {
+            title,
+            author,
+            url,
+        }
+        const createdBlog = await blogService.create(newBlogObject)
+        setBlogs(blogs.concat(createdBlog))
+        setAuthor('')
+        setTitle('')
+        setUrl('')
+    }
+    const blogForm = () => (
         <>
-            <h2>Add a blog</h2>
-            <form onSubmit={handleLogin}>
+            <h2>Add Blog</h2>
+            <form onSubmit={addBlog}>
                 <div>
                     title:
                     <input type="text" value={title} name="Title" onChange={({ target }) => setTitle(target.value)} />
@@ -75,6 +91,7 @@ function App() {
                     url:
                     <input type="text" value={url} name="url" onChange={({ target }) => setUrl(target.value)} />
                 </div>
+                <button type="submit">create</button>
             </form>
         </>
     )
@@ -116,7 +133,7 @@ function App() {
             {blogs.map(blog => (
                 <Blog key={blog.id} blog={blog} />
             ))}
-            {addBlog()}
+            {blogForm()}
         </>
     )
     return (
