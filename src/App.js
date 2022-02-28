@@ -2,7 +2,6 @@
 // 1) notifications like with the countries project
 // 2) change blogService to use async await
 
-/* global window */
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
