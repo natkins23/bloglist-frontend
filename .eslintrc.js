@@ -20,4 +20,8 @@ module.exports = {
         'react/react-in-jsx-scope': 0,
     },
     plugins: ['prettier'],
+    globals: {
+        window: 'writable',
+        document: 'writeable',
+    },
 }
