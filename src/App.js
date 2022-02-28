@@ -6,13 +6,13 @@ import loginService from './services/login'
 
 function App() {
     const [blogs, setBlogs] = useState([])
+    const [user, setUser] = useState(null)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [notification, setNotification] = useState(null)
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
-    const [user, setUser] = useState(null)
-    const [notification, setNotification] = useState(null)
 
     useEffect(() => {
         blogService.getAll().then(b => setBlogs(b))
