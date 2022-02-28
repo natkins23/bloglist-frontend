@@ -22,5 +22,6 @@ module.exports = {
     plugins: ['prettier'],
     globals: {
         window: 'writable',
+        document: 'writable',
     },
 }

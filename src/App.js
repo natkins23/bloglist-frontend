@@ -1,7 +1,3 @@
-// Features to add
-// 1) notifications like with the countries project
-// 2) change blogService to use async await
-
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -15,8 +11,8 @@ function App() {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
-    const [errorMessage, setErrorMessage] = useState(null)
     const [user, setUser] = useState(null)
+    const [notification, setNotification] = useState(null)
 
     useEffect(() => {
         blogService.getAll().then(b => setBlogs(b))
@@ -30,14 +26,20 @@ function App() {
             blogService.setToken(loggedUser.token)
         }
     }, [])
+
+    const notifyWith = (message, type = 'success') => {
+        setNotification({ message, type })
+        setTimeout(() => {
+            setNotification(null)
+        }, 5000)
+    }
     const handleLogout = () => {
-        console.log('logging out of', user.username)
         setUser(null)
         window.localStorage.removeItem('loggedUser')
+        notifyWith(`Logged out!`)
     }
     const handleLogin = async event => {
         event.preventDefault()
-        console.log('logging in with', username, password)
         try {
             const loggedUser = await loginService.login({
                 username,
@@ -48,27 +50,28 @@ function App() {
             window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
             setUsername('')
             setPassword('')
-        } catch (exception) {
-            console.log('exception', exception)
-            setErrorMessage('Wrong credentials')
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
+            notifyWith(`${username} logged in!`)
+        } catch (error) {
+            notifyWith(`Failed to login: ${error.response.data.error}`, 'error')
         }
     }
     const addBlog = async event => {
         event.preventDefault()
-        console.log(user)
-        const newBlogObject = {
-            title,
-            author,
-            url,
+        try {
+            const newBlogObject = {
+                title,
+                author,
+                url,
+            }
+            const createdBlog = await blogService.create(newBlogObject)
+            setBlogs(blogs.concat(createdBlog))
+            setAuthor('')
+            setTitle('')
+            setUrl('')
+            notifyWith(`${createdBlog.title} by ${createdBlog.author} was just added!`)
+        } catch (error) {
+            notifyWith(`Failed to add blog: ${error.response.data.error}`, 'error')
         }
-        const createdBlog = await blogService.create(newBlogObject)
-        setBlogs(blogs.concat(createdBlog))
-        setAuthor('')
-        setTitle('')
-        setUrl('')
     }
     const blogForm = () => (
         <>
@@ -139,7 +142,7 @@ function App() {
     return (
         <div>
             <h2>blogs</h2>
-            <Notification message={errorMessage} />
+            <Notification notification={notification} />
             {user === null ? loginForm() : showBlogs()}
         </div>
     )
