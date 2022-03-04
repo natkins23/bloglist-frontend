@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -14,7 +15,6 @@ function App() {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
-    const [blogFormVisible, setBlogFormVisible] = useState(false)
 
     useEffect(() => {
         blogService.getAll().then(b => setBlogs(b))
@@ -76,33 +76,19 @@ function App() {
             notifyWith(`Failed to add blog: ${error.response.data.error}`, 'error')
         }
     }
-    const newBlogForm = () => {
-        const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
-        const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
-        return (
-            <>
-                <div style={hideWhenVisible}>
-                    <button type="button" onClick={() => setBlogFormVisible(true)}>
-                        add blog
-                    </button>
-                </div>
-                <div style={showWhenVisible}>
-                    <NewBlogForm
-                        title={title}
-                        author={author}
-                        url={url}
-                        handleTitleChange={({ target }) => setTitle(target.value)}
-                        handleAuthorChange={({ target }) => setAuthor(target.value)}
-                        handleUrlChange={({ target }) => setUrl(target.value)}
-                        addBlog={addBlog}
-                    />
-                    <button type="button" onClick={() => setBlogFormVisible(false)}>
-                        cancel
-                    </button>
-                </div>
-            </>
-        )
-    }
+    const newBlogForm = () => (
+        <Togglable buttonLabel="add blog">
+            <NewBlogForm
+                title={title}
+                author={author}
+                url={url}
+                handleTitleChange={({ target }) => setTitle(target.value)}
+                handleAuthorChange={({ target }) => setAuthor(target.value)}
+                handleUrlChange={({ target }) => setUrl(target.value)}
+                addBlog={addBlog}
+            />
+        </Togglable>
+    )
     const loginForm = () => (
         <>
             <h2>Log in to application</h2>
