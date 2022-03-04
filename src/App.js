@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
+import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -37,6 +38,7 @@ function App() {
     }
     const handleLogout = () => {
         setUser(null)
+        blogService.setToken(null)
         window.localStorage.removeItem('loggedUser')
         notifyWith(`Logged out!`)
     }
@@ -90,52 +92,43 @@ function App() {
         </Togglable>
     )
     const loginForm = () => (
-        <>
-            <h2>Log in to application</h2>
-            <form onSubmit={handleLogin}>
-                <div>
-                    username
-                    <input
-                        type="text"
-                        value={username}
-                        name="Username"
-                        onChange={({ target }) => setUsername(target.value)}
-                    />
-                </div>
-                <div>
-                    password
-                    <input
-                        type="password"
-                        value={password}
-                        name="Password"
-                        onChange={({ target }) => setPassword(target.value)}
-                    />
-                </div>
-                <button type="submit">login</button>
-            </form>
-        </>
+        <Togglable buttonLabel="login">
+            <LoginForm
+                username={username}
+                password={[password]}
+                handleUsernameChange={({ target }) => setUsername(target.value)}
+                handlePasswordChange={({ target }) => setPassword(target.value)}
+                handleLogin={handleLogin}
+            />
+        </Togglable>
     )
 
     const showBlogs = () => (
         <>
-            <p>
-                Hi {user.name}!
-                <button type="button" onClick={handleLogout}>
-                    logout
-                </button>
-            </p>
-
             {blogs.map(blog => (
                 <Blog key={blog.id} blog={blog} />
             ))}
-            {newBlogForm()}
         </>
     )
     return (
         <div>
             <h2>blogs</h2>
             <Notification notification={notification} />
-            {user === null ? loginForm() : showBlogs()}
+            {user === null ? (
+                loginForm()
+            ) : (
+                <div>
+                    <p>
+                        Hi {user.name}!
+                        <button type="button" onClick={handleLogout}>
+                            logout
+                        </button>
+                    </p>
+                    {newBlogForm()}
+                </div>
+            )}
+            <br />
+            {showBlogs()}
         </div>
     )
 }
