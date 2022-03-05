@@ -1,4 +1,4 @@
-function NewBlogForm({ handleLogin, username, password, handleUsernameChange, handlePasswordChange }) {
+function LoginForm({ handleLogin, username, password, handleUsernameChange, handlePasswordChange }) {
     return (
         <>
             <h2>Log in to application</h2>
@@ -16,4 +16,4 @@ function NewBlogForm({ handleLogin, username, password, handleUsernameChange, ha
         </>
     )
 }
-export default NewBlogForm
+export default LoginForm

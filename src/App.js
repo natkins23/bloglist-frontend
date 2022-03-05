@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
@@ -62,6 +62,7 @@ function App() {
 
     const addBlog = async event => {
         event.preventDefault()
+        blogFormRef.current.toggleVisibility()
         try {
             const newBlogObject = {
                 title,
@@ -78,8 +79,9 @@ function App() {
             notifyWith(`Failed to add blog: ${error.response.data.error}`, 'error')
         }
     }
+    const blogFormRef = useRef()
     const newBlogForm = () => (
-        <Togglable buttonLabel="add blog">
+        <Togglable buttonLabel="add blog" ref={blogFormRef}>
             <NewBlogForm
                 title={title}
                 author={author}
@@ -91,6 +93,7 @@ function App() {
             />
         </Togglable>
     )
+
     const loginForm = () => (
         <Togglable buttonLabel="login">
             <LoginForm
