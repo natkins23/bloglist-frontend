@@ -10,8 +10,6 @@ import loginService from './services/login'
 function App() {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
     const [notification, setNotification] = useState(null)
 
     useEffect(() => {
@@ -33,14 +31,13 @@ function App() {
             setNotification(null)
         }, 5000)
     }
-    const handleLogout = () => {
+    const logout = () => {
         setUser(null)
         blogService.setToken(null)
         window.localStorage.removeItem('loggedUser')
         notifyWith(`Logged out!`)
     }
-    const handleLogin = async event => {
-        event.preventDefault()
+    const login = async (username, password) => {
         try {
             const loggedUser = await loginService.login({
                 username,
@@ -49,8 +46,6 @@ function App() {
             setUser(loggedUser)
             blogService.setToken(loggedUser.token)
             window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
-            setUsername('')
-            setPassword('')
             notifyWith(`${username} logged in!`)
         } catch (error) {
             notifyWith(`Failed to login: ${error.response.data.error}`, 'error')
@@ -76,13 +71,7 @@ function App() {
 
     const loginForm = () => (
         <Togglable buttonLabel="login">
-            <LoginForm
-                username={username}
-                password={[password]}
-                handleUsernameChange={({ target }) => setUsername(target.value)}
-                handlePasswordChange={({ target }) => setPassword(target.value)}
-                handleLogin={handleLogin}
-            />
+            <LoginForm onLogin={login} />
         </Togglable>
     )
 
@@ -103,7 +92,7 @@ function App() {
                 <div>
                     <p>
                         Hi {user.name}!
-                        <button type="button" onClick={handleLogout}>
+                        <button type="button" onClick={logout}>
                             logout
                         </button>
                     </p>
