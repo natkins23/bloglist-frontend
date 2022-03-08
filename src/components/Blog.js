@@ -21,7 +21,7 @@ function BlogDetails({ blog, visible, likeBlog, removeBlog, own }) {
     )
 }
 
-function Blog({ blog, likeBlog, removeBlog, own }) {
+function Blog({ blog, likeBlog, removeBlog, user }) {
     const [visible, setVisible] = useState(false)
 
     const toggleVisibility = () => {
@@ -42,7 +42,7 @@ function Blog({ blog, likeBlog, removeBlog, own }) {
             <button type="button" style={viewBtnStyle} onClick={toggleVisibility}>
                 {visible ? 'hide' : 'view'}
             </button>
-            <BlogDetails blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} visible={visible} own={own} />
+            <BlogDetails blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} visible={visible} own={blog.user && user && user.username===blog.user.username} />
         </div>
     )
 }
