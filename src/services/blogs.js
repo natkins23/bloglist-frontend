@@ -1,25 +1,22 @@
 import axios from 'axios'
+import userService from './user'
 
 const baseUrl = '/api/blogs'
 
-// eslint-disable-next-line no-unused-vars
-let token = null
-
-const setToken = newToken => {
-    token = `bearer ${newToken}`
-}
-
-const create = async newBlog => {
-    const config = {
-        headers: { Authorization: token },
-    }
-    const response = await axios.post(baseUrl, newBlog, config)
-    return response.data
-}
+const config = () => ({ headers: { Authorization: `bearer ${userService.getToken()}` } })
 
 const getAll = async () => {
     const response = await axios.get(baseUrl)
     return response.data
 }
+const create = async newBlog => {
+    const response = await axios.post(baseUrl, newBlog, config())
+    return response.data
+}
 
-export default { getAll, create, setToken }
+const update = async updatedBlog => {
+    const response = await axios.put(`${baseUrl}/${updatedBlog.id}`, updatedBlog, config())
+    return response.data
+}
+
+export default { getAll, create, update }

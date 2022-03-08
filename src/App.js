@@ -6,37 +6,25 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/user'
 
 function App() {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
     const [notification, setNotification] = useState(null)
+    const blogFormRef = useRef()
 
     useEffect(() => {
         blogService.getAll().then(b => setBlogs(b))
     }, [])
 
     useEffect(() => {
-        const loggedUserJSON = window.localStorage.getItem('loggedUser')
-        if (loggedUserJSON) {
-            const loggedUser = JSON.parse(loggedUserJSON)
-            setUser(loggedUser)
-            blogService.setToken(loggedUser.token)
+        const userFromStorage = userService.getUser()
+        if (userFromStorage) {
+            setUser(userFromStorage)
         }
     }, [])
 
-    const notifyWith = (message, type = 'success') => {
-        setNotification({ message, type })
-        setTimeout(() => {
-            setNotification(null)
-        }, 5000)
-    }
-    const logout = () => {
-        setUser(null)
-        blogService.setToken(null)
-        window.localStorage.removeItem('loggedUser')
-        notifyWith(`Logged out!`)
-    }
     const login = async (username, password) => {
         try {
             const loggedUser = await loginService.login({
@@ -44,25 +32,56 @@ function App() {
                 password,
             })
             setUser(loggedUser)
-            blogService.setToken(loggedUser.token)
-            window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
+            userService.setUser(loggedUser)
             notifyWith(`${username} logged in!`)
         } catch (error) {
             notifyWith(`Failed to login: ${error.response.data.error}`, 'error')
         }
     }
 
-    const createBlog = async blogObject => {
+    const logout = () => {
+        setUser(null)
+        userService.clearUser()
+        notifyWith(`Logged out!`)
+    }
+
+    const createBlog = async newBlog => {
         try {
             blogFormRef.current.toggleVisibility()
-            const createdBlog = await blogService.create(blogObject)
+            const createdBlog = await blogService.create(newBlog)
             setBlogs(blogs.concat(createdBlog))
-            notifyWith(`${createdBlog.title} by ${createdBlog.author} was just added!`)
+            notifyWith(`${createdBlog.title} was just added!`)
         } catch (error) {
             notifyWith(`Failed to add blog: ${error.response.data.error}`, 'error')
         }
     }
-    const blogFormRef = useRef()
+
+    const likeBlog = async blogToLike => {
+        console.log(blogs)
+        const likedBlog = {
+            ...blogToLike,
+            likes: blogToLike.likes + 1,
+            user: blogToLike.user.id,
+        }
+        console.log(likedBlog)
+        try {
+            const updatedBlog = await blogService.update(likedBlog)
+            notifyWith(`You just liked "${updatedBlog.title}!"`)
+            const updatedBlogs = blogs.map(b => (b.id === updatedBlog.id ? updatedBlog : b))
+            setBlogs(updatedBlogs)
+        } catch (error) {
+            notifyWith(`Failed to add blog: ${error.response.data.error}`, 'error')
+        }
+    }
+
+    const notifyWith = (message, type = 'success') => {
+        setNotification({ message, type })
+        setTimeout(() => {
+            setNotification(null)
+        }, 5000)
+    }
+
+    // ---JSX---
     const newBlogForm = () => (
         <Togglable buttonLabel="add blog" ref={blogFormRef}>
             <NewBlogForm createBlog={createBlog} />
@@ -78,10 +97,11 @@ function App() {
     const showBlogs = () => (
         <>
             {blogs.map(blog => (
-                <Blog key={blog.id} blog={blog} />
+                <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
             ))}
         </>
     )
+
     return (
         <div>
             <h2>blogs</h2>
