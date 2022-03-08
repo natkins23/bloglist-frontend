@@ -73,10 +73,15 @@ function App() {
     }
 
     const removeBlog = async blogToRemove => {
+        // eslint-disable-next-line no-alert
+        const ok = window.confirm(`remove '${blogToRemove.title}'?`)
+        if (!ok) {
+            return
+        }
         try {
-            const updatedBlog = await blogService.remove(blogToRemove)
+            await blogService.remove(blogToRemove)
             notifyWith(`Just deleted a blog`)
-            const updatedBlogs = blogs.filter(b => b.id !== updatedBlog.id)
+            const updatedBlogs = blogs.filter(b => b.id !== blogToRemove.id)
             setBlogs(updatedBlogs)
         } catch (error) {
             notifyWith(`Failed to remove blog: ${error.response.data.error}`, 'error')
@@ -105,7 +110,7 @@ function App() {
     const showBlogs = () => (
         <>
             {blogs.map(blog => (
-                <Blog key={blog.id} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} />
+                <Blog key={blog.id} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} own = {blog.user && blog.user.username === user.username}/>
             ))}
         </>
     )

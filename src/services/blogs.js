@@ -19,8 +19,7 @@ const update = async updatedBlog => {
     return response.data
 }
 const remove = async removedBlog => {
-    console.log(config())
-    const response = await axios.delete(`${baseUrl}/${removedBlog.id}`, removedBlog, config())
+    const response = await axios.delete(`${baseUrl}/${removedBlog.id}`, config())
     return response.data
 }
 

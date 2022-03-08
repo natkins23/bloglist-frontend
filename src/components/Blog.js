@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function BlogDetails({ blog, visible, likeBlog, removeBlog }) {
+function BlogDetails({ blog, visible, likeBlog, removeBlog, own }) {
     if (!visible) return null
     return (
         <div>
@@ -12,14 +12,16 @@ function BlogDetails({ blog, visible, likeBlog, removeBlog }) {
                     like
                 </button>
             </p>
-            <button type="button" onClick={() => removeBlog(blog)}>
-                remove
-            </button>
+            {own && (
+                <button type="button" onClick={() => removeBlog(blog)}>
+                    remove
+                </button>
+            )}
         </div>
     )
 }
 
-function Blog({ blog, likeBlog, removeBlog }) {
+function Blog({ blog, likeBlog, removeBlog, own }) {
     const [visible, setVisible] = useState(false)
 
     const toggleVisibility = () => {
@@ -40,7 +42,7 @@ function Blog({ blog, likeBlog, removeBlog }) {
             <button type="button" style={viewBtnStyle} onClick={toggleVisibility}>
                 {visible ? 'hide' : 'view'}
             </button>
-            <BlogDetails blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} visible={visible} />
+            <BlogDetails blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} visible={visible} own={own} />
         </div>
     )
 }
