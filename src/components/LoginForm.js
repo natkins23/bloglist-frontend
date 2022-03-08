@@ -10,7 +10,7 @@ function LoginForm({ onLogin }) {
         setUsername('')
         setPassword('')
     }
-
+    
     return (
         <>
             <h2>Log in to application</h2>
