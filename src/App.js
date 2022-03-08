@@ -13,9 +13,9 @@ function App() {
     const [user, setUser] = useState(null)
     const [notification, setNotification] = useState(null)
     const blogFormRef = useRef()
-
+    const byLikes = (b1, b2) => (b2.likes > b1.likes ? 1 : -1)
     useEffect(() => {
-        blogService.getAll().then(b => setBlogs(b))
+        blogService.getAll().then(b => setBlogs(b.sort(byLikes)))
     }, [])
 
     useEffect(() => {
