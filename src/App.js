@@ -57,13 +57,11 @@ function App() {
     }
 
     const likeBlog = async blogToLike => {
-        console.log(blogs)
         const likedBlog = {
             ...blogToLike,
             likes: blogToLike.likes + 1,
             user: blogToLike.user.id,
         }
-        console.log(likedBlog)
         try {
             const updatedBlog = await blogService.update(likedBlog)
             notifyWith(`You just liked "${updatedBlog.title}!"`)
@@ -74,6 +72,16 @@ function App() {
         }
     }
 
+    const removeBlog = async blogToRemove => {
+        try {
+            const updatedBlog = await blogService.remove(blogToRemove)
+            notifyWith(`Just deleted a blog`)
+            const updatedBlogs = blogs.filter(b => b.id !== updatedBlog.id)
+            setBlogs(updatedBlogs)
+        } catch (error) {
+            notifyWith(`Failed to remove blog: ${error.response.data.error}`, 'error')
+        }
+    }
     const notifyWith = (message, type = 'success') => {
         setNotification({ message, type })
         setTimeout(() => {
@@ -97,7 +105,7 @@ function App() {
     const showBlogs = () => (
         <>
             {blogs.map(blog => (
-                <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
+                <Blog key={blog.id} blog={blog} likeBlog={likeBlog} removeBlog={removeBlog} />
             ))}
         </>
     )
