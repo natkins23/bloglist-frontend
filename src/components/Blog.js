@@ -38,7 +38,7 @@ function Blog({ blog, likeBlog, removeBlog, user }) {
         margin: 5,
     }
     return (
-        <div style={blogStyle}>
+        <div style={blogStyle} className="blog">
             {blog.title}
             <button type="button" style={viewBtnStyle} onClick={toggleVisibility}>
                 {visible ? 'hide' : 'view'}
