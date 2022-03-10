@@ -39,7 +39,7 @@ test('css selectors - component displaying a blog renders the blog title only', 
     expect(div).not.toHaveTextContent('fso.com')
 })
 
-test('clicking the button calls event handler once', async () => {
+test('when expanded also url and like rendered', async () => {
     const blog = {
         title: 'Component testing is done with react-testing-library',
         author: 'fso',
