@@ -1,6 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 test('getByText - blog renders the blog title only', () => {
@@ -11,7 +12,7 @@ test('getByText - blog renders the blog title only', () => {
         likes: 0,
     }
 
-    render(<Blog blog={blog} className="blo g" />)
+    render(<Blog blog={blog} className="blog" />)
 
     const titleElement = screen.getByText('Component testing is done with react-testing-library')
     const authorElement = screen.queryByText('fso')
@@ -36,4 +37,25 @@ test('css selectors - component displaying a blog renders the blog title only', 
     expect(div).toHaveTextContent('Component testing is done with react-testing-library')
     expect(div).not.toHaveTextContent('fso')
     expect(div).not.toHaveTextContent('fso.com')
+})
+
+test('clicking the button calls event handler once', async () => {
+    const blog = {
+        title: 'Component testing is done with react-testing-library',
+        author: 'fso',
+        url: 'fso.com',
+        likes: 3,
+    }
+    render(<Blog blog={blog} />)
+
+    const button = screen.getByText('view')
+    userEvent.click(button)
+
+    screen.debug()
+
+    const urlElement = screen.getByText('fso.com')
+    expect(urlElement).toBeDefined()
+
+    const likesElement = screen.getByText('likes:3')
+    expect(likesElement).toBeDefined()
 })
